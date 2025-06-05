@@ -1,57 +1,52 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
-from API.database import SessionLocal
-from API.models import User as UserModel, ProfileEnum
-from API.schemas.user import UserCreate, User, UserUpdate
+from Inovaparq.API.database.db import SessionLocal
+from Inovaparq.API.database.models import User as UserModel
+from Inovaparq.API.schemas.user import UserCreate, User, UserUpdate
 
-def get_db():
-    db = SessionLocal()
+router: APIRouter = APIRouter(prefix = '/users', tags = ['Users'])
+
+def getDb():
     try:
-        yield db
+        yield SessionLocal()
     finally:
-        db.close()
+        SessionLocal().close()
 
-router: APIRouter = APIRouter(prefix='/users', tags=['Users'])
-
-@router.post('/', response_model=User)
-def insertUser(user: UserCreate, db: Session = Depends(get_db)):
-    db_user = db.query(UserModel).filter(UserModel.email == user.email).first()
-    if db_user:
-        raise HTTPException(status_code=400, detail='User already exists')
-    new_user = UserModel(
-        name=user.name,
-        email=user.email,
-        password=user.password,
-        profile=ProfileEnum(user.profile)
-    )
-    db.add(new_user)
+@router.post('/', response_model = User)
+def insertUser(user: UserCreate, db: Session = Depends(getDb)):
+    dbUser = db.query(UserModel).filter(UserModel.email == user.email).first()
+    if dbUser: raise HTTPException(status_code = 400, detail = 'User already exists')
+    newUser = UserModel(**user.dict())
+    db.add(newUser)
     db.commit()
-    db.refresh(new_user)
-    return new_user
+    db.refresh(newUser)
+    return (newUser)
 
-@router.get('/{userId}', response_model=User)
-def getUser(userId: int, db: Session = Depends(get_db)):
+@router.get('/{userId}', response_model = User)
+def getUser(userId: int, db: Session = Depends(getDb)):
     user = db.query(UserModel).filter(UserModel.id == userId).first()
-    if user:
-        return user
-    raise HTTPException(status_code=404, detail='User not found')
+    if user: return user
+    raise HTTPException(status_code = 404, detail = 'User not found')
 
-@router.put('/{userId}', response_model=User)
-def updateUser(userId: int, userUpdate: UserUpdate, db: Session = Depends(get_db)):
+@router.get('/', response_model = list[User])
+def getAllUsers(db: Session = Depends(getDb)):
+    users = db.query(UserModel).all()
+    if users: return users
+    raise HTTPException(status_code = 404, detail = 'No users found')
+
+@router.put('/{userId}', response_model = User)
+def updateUser(userId: int, userUpdate: UserUpdate, db: Session = Depends(getDb)):
     user = db.query(UserModel).filter(UserModel.id == userId).first()
-    if not user:
-        raise HTTPException(status_code=404, detail='User not found')
-    for key, value in userUpdate.dict(exclude_unset=True).items():
-        setattr(user, key, value)
+    if not user: raise HTTPException(status_code = 404, detail = 'User not found')
+    for key, value in userUpdate.dict(exclude_unset = True).items(): setattr(user, key, value)
     db.commit()
     db.refresh(user)
     return user
 
 @router.delete('/{userId}')
-def deleteUser(userId: int, db: Session = Depends(get_db)):
+def deleteUser(userId: int, db: Session = Depends(getDb)):
     user = db.query(UserModel).filter(UserModel.id == userId).first()
-    if not user:
-        raise HTTPException(status_code=404, detail='User not found')
+    if not user: raise HTTPException(status_code = 404, detail = 'User not found')
     db.delete(user)
     db.commit()
     return {"detail": f"User '{user.name}' deleted successfully"}
