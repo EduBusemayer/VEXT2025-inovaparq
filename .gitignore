@@ -1,0 +1,4 @@
+venv/
+Inovaparq/API/routers/__pycache__/
+Inovaparq/API/__pycache__/
+Inovaparq/API/schemas/__pycache__/
