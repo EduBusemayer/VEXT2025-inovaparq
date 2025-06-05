@@ -50,3 +50,10 @@ def deleteStartup(startupId: int, db: Session = Depends(get_db)):
     db.delete(startup)
     db.commit()
     return {"detail": f"Startup '{startup.name}' deleted successfully"}
+
+@router.get('/', response_model=list[Startup])
+def getAllStartups(db: Session = Depends(get_db)):
+    startups = db.query(StartupModel).all()
+    if startups:
+        return startups
+    raise HTTPException(status_code=404, detail='No startups found')
