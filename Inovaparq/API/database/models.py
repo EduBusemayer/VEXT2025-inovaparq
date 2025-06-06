@@ -1,6 +1,17 @@
 from sqlalchemy import Column, Integer, String
 from Inovaparq.API.database.db import Base
 
+# Deixei separado para caso queira criar as tabelas apenas quando for adicionar um usuário ou startup
+'''
+def ensure_user_table():
+    User.__table__.create(bind = engine, checkfirst = True) 
+    
+def ensure_startup_table():
+    Startup.__table__.create(bind = engine, checkfirst = True)
+
+'''    
+
+
 class User(Base):
     __tablename__ = "users"
 
