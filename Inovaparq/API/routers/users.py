@@ -14,6 +14,8 @@ def getDb():
 
 @router.post('/', response_model = User)
 def insertUser(user: UserCreate, db: Session = Depends(getDb)):
+    # Cria as tabelas caso não existam
+    # ensure_user_table() 
     dbUser = db.query(UserModel).filter(UserModel.email == user.email).first()
     if dbUser: raise HTTPException(status_code = 400, detail = 'User already exists')
     newUser = UserModel(**user.dict())

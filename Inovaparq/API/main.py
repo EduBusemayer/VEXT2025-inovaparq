@@ -1,6 +1,9 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
+from Inovaparq.API.database.db import Base, engine
 from Inovaparq.API.routers import startups, users
+
+Base.metadata.create_all(bind = engine) # Gera as tabelas no banco de dados se não existirem
 
 app = FastAPI()
 origins = [
