@@ -4,6 +4,8 @@ from typing import Literal
 class UserBase(BaseModel):
     name: str
     email: EmailStr
+    profile: str
+    startup_id: int | None = None
     
 class UserCreate(UserBase):
     password: str
@@ -14,6 +16,7 @@ class UserUpdate(BaseModel):
     email: str | None = None
     password: str | None = None
     profile: Literal['admin', 'startup'] | None = None
+    startup_id: int | None = None
 
 class User(UserBase):
     id: int

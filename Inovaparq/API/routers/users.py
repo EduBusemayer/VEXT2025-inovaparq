@@ -14,8 +14,6 @@ def getDb():
 
 @router.post('/', response_model = User)
 def insertUser(user: UserCreate, db: Session = Depends(getDb)):
-    # Cria as tabelas caso não existam
-    # ensure_user_table() 
     dbUser = db.query(UserModel).filter(UserModel.email == user.email).first()
     if dbUser: raise HTTPException(status_code = 400, detail = 'User already exists')
     newUser = UserModel(**user.dict())
@@ -52,3 +50,9 @@ def deleteUser(userId: int, db: Session = Depends(getDb)):
     db.delete(user)
     db.commit()
     return {"detail": f"User '{user.name}' deleted successfully"}
+
+@router.get('/email/{email}', response_model = User)
+def getUserByEmail(email: str, db: Session = Depends(getDb)):
+    user = db.query(UserModel).filter(UserModel.email == email).first()
+    if user: return user
+    raise HTTPException(status_code = 404, detail = 'User not found')

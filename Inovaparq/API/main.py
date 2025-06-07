@@ -1,24 +1,24 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from Inovaparq.API.database.db import Base, engine
-from Inovaparq.API.routers import startups, users
+from Inovaparq.API.routers import startups, users, login
 
-Base.metadata.create_all(bind = engine) # Gera as tabelas no banco de dados se não existirem
+Base.metadata.create_all(bind = engine)
 
 app = FastAPI()
 origins = [
-    "http://localhost:5173",  # origem do seu frontend
-    # você pode adicionar outras URLs se quiser liberar mais frontends
+    "http://localhost:5173"
 ]
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=origins,       # libera o frontend para fazer requisição
+    allow_origins=origins,
     allow_credentials=True,
-    allow_methods=["*"],         # permite todos os métodos (GET, POST, etc)
-    allow_headers=["*"],         # permite todos os headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 app.include_router(users.router)
 app.include_router(startups.router)
+app.include_router(login.router)
 
 @app.get("/")
 def default():

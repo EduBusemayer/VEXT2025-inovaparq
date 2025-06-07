@@ -14,8 +14,6 @@ def getDb():
 
 @router.post('/', response_model = Startup)
 def insertStartup(startup: StartupCreate, db: Session = Depends(getDb)):
-    # Cria as tabelas caso não existam
-    # ensure_startup_table()
     dbStartup = db.query(StartupModel).filter(StartupModel.name == startup.name).first()
     if dbStartup: raise HTTPException(status_code = 400, detail = 'Startup already exists')
     newStartup = StartupModel(**startup.dict())
