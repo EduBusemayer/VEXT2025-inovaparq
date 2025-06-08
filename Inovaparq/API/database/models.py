@@ -17,8 +17,7 @@ class User(Base):
     email = Column(String(50), unique = True, index = True, nullable = False)
     password = Column(String(50), nullable = False)
     profile = Column(String(10), nullable = False)
-    createdAt = Column(TIMESTAMP(timezone = True), nullable = False, server_default = text('now()'))
-    startupId = Column(Integer, ForeignKey('startups.id', ondelete = 'CASCADE'), nullable = True)
+    startup_id = Column(Integer, ForeignKey('startups.id', ondelete = 'CASCADE'), nullable = True)
     
 class Startup(Base):
     __tablename__ = "startups"
@@ -28,4 +27,3 @@ class Startup(Base):
     description = Column(String(200), nullable = False)
     incubator = Column(String(10), nullable = False) 
     stage = Column(String(20), nullable = False)
-    createdAt = Column(TIMESTAMP(timezone = True), nullable = False, server_default = text('now()'))

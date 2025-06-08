@@ -13,9 +13,11 @@ def getDb():
     finally:
         SessionLocal().close()
 
-@router.post('/', response_model = dict)
-def login(formData: LoginRequest, db: Session = Depends(getDb)):
-    dbUser = db.query(UserModel).filter(UserModel.email == formData.email).first()
-    if not dbUser or dbUser.password != formData.password: raise HTTPException(status_code = 401, detail = 'Invalid credentials')
-    userData = jsonable_encoder(dbUser)
-    return {'user': userData.pop('password', None)}
+@router.post('/')
+def login(form_data: LoginRequest, db: Session = Depends(getDb)):
+    user = db.query(UserModel).filter(UserModel.email == form_data.email).first()
+    if not user or user.password != form_data.password:
+        raise HTTPException(status_code=401, detail="Invalid credentials")
+    user_data = jsonable_encoder(user)
+    user_data.pop("password", None)
+    return {"user": user_data}
