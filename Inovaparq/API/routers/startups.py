@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from Inovaparq.API.database.db import SessionLocal
-from Inovaparq.API.database.models import Startup as StartupModel
+from Inovaparq.API.database.models import Startup as StartupModel, createStartupTable
 from Inovaparq.API.schemas.startup import Startup, StartupCreate, StartupUpdate
 
 router: APIRouter = APIRouter(prefix = '/startups', tags = ['Startups'])
@@ -14,6 +14,7 @@ def getDb():
 
 @router.post('/', response_model = Startup)
 def insertStartup(startup: StartupCreate, db: Session = Depends(getDb)):
+    createStartupTable()
     dbStartup = db.query(StartupModel).filter(StartupModel.name == startup.name).first()
     if dbStartup: raise HTTPException(status_code = 400, detail = 'Startup already exists')
     newStartup = StartupModel(**startup.dict())
@@ -28,7 +29,7 @@ def getStartup(startupId: int, db: Session = Depends(getDb)):
     if startup: return startup
     raise HTTPException(status_code = 404, detail = 'Startup not found')
 
-@router.get('/', response_model = list[Startup])
+@router.get('/listStartups/all', response_model = list[Startup])
 def getAllStartups(db: Session = Depends(getDb)):
     startups = db.query(StartupModel).all()
     if startups: return startups

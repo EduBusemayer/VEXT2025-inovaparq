@@ -5,23 +5,6 @@ python -m pip install fastapi
 # Start API
 python -m uvicorn Inovaparq.API.main:app --reload
 
-# Create DB
+# Create MySQL DB
 CREATE DATABASE IF NOT EXISTS inovaparq CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
 USE inovaparq;
-
-# Create Tables
-CREATE TABLE users (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    email VARCHAR(50) NOT NULL UNIQUE,
-    password VARCHAR(50) NOT NULL,
-    profile VARCHAR(10) NOT NULL
-    startup_id INT,
-);
-CREATE TABLE startups (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    name VARCHAR(50) NOT NULL,
-    description VARCHAR(200) NOT NULL,
-    incubator VARCHAR(10) NOT NULL,
-    stage VARCHAR(20) NOT NULL
-);

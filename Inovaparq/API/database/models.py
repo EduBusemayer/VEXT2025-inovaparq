@@ -1,16 +1,13 @@
-from sqlalchemy import Column, Integer, String
-from Inovaparq.API.database.db import Base
+from sqlalchemy import Column, Integer, String, ForeignKey
+from sqlalchemy.sql.expression import text
+from sqlalchemy.sql.sqltypes import TIMESTAMP
+from Inovaparq.API.database.db import Base, engine
 
-# Deixei separado para caso queira criar as tabelas apenas quando for adicionar um usuário ou startup
-'''
-def ensure_user_table():
+def createUserTable():
     User.__table__.create(bind = engine, checkfirst = True) 
     
-def ensure_startup_table():
-    Startup.__table__.create(bind = engine, checkfirst = True)
-
-'''    
-
+def createStartupTable():
+    Startup.__table__.create(bind = engine, checkfirst = True)   
 
 class User(Base):
     __tablename__ = "users"
@@ -20,7 +17,8 @@ class User(Base):
     email = Column(String(50), unique = True, index = True, nullable = False)
     password = Column(String(50), nullable = False)
     profile = Column(String(10), nullable = False)
-    startup_id = Column(Integer, nullable = True)
+    createdAt = Column(TIMESTAMP(timezone = True), nullable = False, server_default = text('now()'))
+    startupId = Column(Integer, ForeignKey('startups.id', ondelete = 'CASCADE'), nullable = True)
     
 class Startup(Base):
     __tablename__ = "startups"
@@ -30,3 +28,4 @@ class Startup(Base):
     description = Column(String(200), nullable = False)
     incubator = Column(String(10), nullable = False) 
     stage = Column(String(20), nullable = False)
+    createdAt = Column(TIMESTAMP(timezone = True), nullable = False, server_default = text('now()'))
