@@ -20,6 +20,7 @@ class User(Base):
     email = Column(String(50), unique = True, index = True, nullable = False)
     password = Column(String(50), nullable = False)
     profile = Column(String(10), nullable = False)
+    startup_id = Column(Integer, nullable = True)
     
 class Startup(Base):
     __tablename__ = "startups"

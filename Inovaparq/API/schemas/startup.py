@@ -4,6 +4,8 @@ from pydantic import BaseModel
 class StartupBase(BaseModel):
     name: str
     description: str
+    incubator: str
+    stage: str
 
 class StartupCreate(StartupBase):
     incubator: Literal['CENTRA', 'CAUSE', 'CRIA-TE', 'NANOTECH']
