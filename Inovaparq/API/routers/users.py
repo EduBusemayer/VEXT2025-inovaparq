@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, Depends
 from sqlalchemy.orm import Session
 from Inovaparq.API.database.db import SessionLocal
-from Inovaparq.API.database.models import User as UserModel
+from Inovaparq.API.database.models import User as UserModel, Startup as StartupModel
 from Inovaparq.API.schemas.user import UserCreate, User, UserUpdate
 
 router: APIRouter = APIRouter(prefix = '/users', tags = ['Users'])
@@ -56,3 +56,11 @@ def getUserByEmail(email: str, db: Session = Depends(getDb)):
     user = db.query(UserModel).filter(UserModel.email == email).first()
     if user: return user
     raise HTTPException(status_code = 404, detail = 'User not found')
+
+@router.get('/listUsers/{startupId}', response_model = dict)
+def getAllUsersByStartup(startupId: int, db: Session = Depends(getDb)):
+    dbUsers = db.query(UserModel).filter(UserModel.startup_id == startupId).all()
+    dbStartup = db.query(StartupModel).filter(StartupModel.id == startupId).first()
+    if not dbStartup: raise HTTPException(status_code = 404, detail = 'Startup not found')
+    if not dbUsers: raise HTTPException(status_code = 404, detail = 'No users found')
+    return {"users": [user.name for user in dbUsers]}

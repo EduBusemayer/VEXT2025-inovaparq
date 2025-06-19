@@ -27,3 +27,4 @@ class Startup(Base):
     description = Column(String(200), nullable = False)
     incubator = Column(String(10), nullable = False) 
     stage = Column(String(20), nullable = False)
+    plan = Column(String(10), nullable = True)
