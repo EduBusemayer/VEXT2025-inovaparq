@@ -63,4 +63,4 @@ def getAllUsersByStartup(startupId: int, db: Session = Depends(getDb)):
     dbStartup = db.query(StartupModel).filter(StartupModel.id == startupId).first()
     if not dbStartup: raise HTTPException(status_code = 404, detail = 'Startup not found')
     if not dbUsers: raise HTTPException(status_code = 404, detail = 'No users found')
-    return {"users": [user.name for user in dbUsers]}
+    return {"users": [{"name": user.name, "email": user.email} for user in dbUsers]}
